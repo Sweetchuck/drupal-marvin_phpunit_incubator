@@ -1,0 +1,11 @@
+services:
+  marvin_phpunit_incubator.run.commands:
+    class: 'Drush\Commands\marvin_phpunit_incubator\RunCommands'
+    tags:
+      -
+        name: 'drush.command'
+  marvin_phpunit_incubator.config_generate.commands:
+    class: 'Drush\Commands\marvin_phpunit_incubator\ConfigGenerateCommands'
+    tags:
+      -
+        name: 'drush.command'

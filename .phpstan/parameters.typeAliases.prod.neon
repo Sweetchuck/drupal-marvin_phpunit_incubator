@@ -1,0 +1,17 @@
+parameters:
+	typeAliases:
+		marvin-phpunit-incubator-robo-task-phpunit-config-generator-options: '''
+			array{
+				assetNamePrefix?: string,
+				envVarStorage?: null|\Sweetchuck\EnvVarStorage\EnvVarStorageInterface,
+				baseUrl?: ?string,
+				cwd?: string,
+				rootProjectDir?: string,
+				drupalRoot?: string
+				mdeDir?: string
+				vendorDir?: string
+				projectVendor?: string,
+				projectName?: string,
+				projectRelativePath?: string,
+			}
+		'''

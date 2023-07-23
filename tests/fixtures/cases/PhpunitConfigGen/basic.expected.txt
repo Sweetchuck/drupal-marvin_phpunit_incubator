@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<phpunit
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../vendor/phpunit/phpunit/phpunit.xsd"
+  bootstrap="../../tests/bootstrap.php"
+  cacheResultFile="../../.cache/phpunit/drupal/dummy_m1/result.json"
+  beStrictAboutOutputDuringTests="true"
+  beStrictAboutChangesToGlobalState="true"
+  colors="true">
+  <!--
+Usage:
+cd docroot
+../vendor/bin/phpunit &#45;&#45;configuration='../managedDrupalExtension/dummy_m1/phpunit.xml'
+-->
+  <php>
+    <ini name="memory_limit" value="-1"/>
+    <ini name="error_reporting" value="32767"/>
+    <env name="SIMPLETEST_BASE_URL" value="my-SIMPLETEST_BASE_URL-a"/>
+    <env name="SIMPLETEST_DB" value="my-SIMPLETEST_DB-b"/>
+    <env name="SYMFONY_DEPRECATIONS_HELPER" value="my-SYMFONY_DEPRECATIONS_HELPER-c"/>
+    <env name="MINK_DRIVER_CLASS" value="my-MINK_DRIVER_CLASS-d"/>
+    <env name="MINK_DRIVER_ARGS" value="my-MINK_DRIVER_ARGS-e"/>
+    <env name="MINK_DRIVER_ARGS_WEBDRIVER" value="my-MINK_DRIVER_ARGS_WEBDRIVER-f"/>
+  </php>
+  <coverage processUncoveredFiles="true">
+    <include>
+      <directory>../../../../drupal/dummy_m1-1.x/Commands</directory>
+      <directory>../../../../drupal/dummy_m1-1.x/src</directory>
+      <file>../../../../drupal/dummy_m1-1.x/dummy_m1.module</file>
+    </include>
+    <report>
+      <clover outputFile="./reports/machine/coverage/phpunit.xml"/>
+      <html outputDirectory="./reports/human/coverage/html"/>
+      <text outputFile="php://stdout"/>
+    </report>
+  </coverage>
+  <testsuites>
+    <testsuite name="unit">
+      <directory>../../../../drupal/dummy_m1-1.x/tests/src/Unit</directory>
+    </testsuite>
+    <testsuite name="kernel">
+      <directory>../../../../drupal/dummy_m1-1.x/tests/src/Kernel</directory>
+    </testsuite>
+    <testsuite name="functional">
+      <directory>../../../../drupal/dummy_m1-1.x/tests/src/Functional</directory>
+    </testsuite>
+    <testsuite name="functional-javascript">
+      <directory>../../../../drupal/dummy_m1-1.x/tests/src/FunctionalJavascript</directory>
+    </testsuite>
+  </testsuites>
+  <listeners>
+    <listener class="\Drupal\Tests\Listeners\DrupalListener"/>
+  </listeners>
+  <logging>
+    <testdoxHtml outputFile="./reports/human/junit/phpunit.html"/>
+    <junit outputFile="./reports/machine/junit/phpunit.xml"/>
+  </logging>
+</phpunit>

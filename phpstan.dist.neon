@@ -1,0 +1,8 @@
+includes:
+	- ../marvin-3.x/.phpstan/parameters.typeAliases.prod.neon
+	- ../marvin_incubator-3.x/.phpstan/parameters.typeAliases.prod.neon
+	- ./.phpstan/parameters.general.neon
+	- ./.phpstan/parameters.paths.neon
+	- ./.phpstan/parameters.typeAliases.prod.neon
+	- ./.phpstan/parameters.typeAliases.dev.neon
+	- ./.phpstan/parameters.ignoreErrors.neon

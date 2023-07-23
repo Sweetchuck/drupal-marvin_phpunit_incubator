@@ -1,16 +1,19 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Drush\Commands\marvin_phpunit_incubator;
 
-use Drupal\marvin\Utils;
-use Drush\Commands\marvin_phpunit\TestCommandsBase;
 use Drupal\marvin\Utils as MarvinUtils;
 use Drupal\marvin_incubator\CommandsBaseTrait;
+use Drupal\marvin_incubator\Attributes as MarvinIncubatorCLI;
 use Drupal\marvin_phpunit_incubator\Utils as PhpunitUtils;
+use Drush\Attributes as CLI;
+use Drush\Boot\DrupalBootLevels;
+use Drush\Commands\marvin_phpunit\TestCommandsBase;
 use Robo\Collection\CollectionBuilder;
-use Sweetchuck\Utils\Filter\ArrayFilterEnabled;
+use Robo\Contract\TaskInterface;
+use Sweetchuck\Utils\Filter\EnabledFilter;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Path;
 
@@ -27,45 +30,70 @@ class TestCommands extends TestCommandsBase {
   }
 
   /**
-   * @command marvin:test:phpunit
-   * @bootstrap none
+   * @phpstan-param string[] $packageNames
+   * @phpstan-param array<string, mixed> $options
    *
-   * @marvinArgPackages packages
    * @marvinOptionPhpVariants phpVariants
    * @marvinOptionDatabaseVariants dbVariants
    *
    * @todo CLI option for testSuiteNames.
+   * @todo Consistent argument/option names. See marvin:site:create.
    */
+  #[CLI\Command(name: 'marvin:test:phpunit')]
+  #[CLI\Help(
+    description: 'Runs PHPUnit tests for the given managed Drupal extensions.',
+  )]
+  #[CLI\Bootstrap(level: DrupalBootLevels::NONE)]
+  #[CLI\Option(
+    name: 'phpVariants',
+    description: '@todo Documentation.',
+  )]
+  #[CLI\Option(
+    name: 'dbVariants',
+    description: '@todo Documentation.',
+  )]
+  #[CLI\Argument(
+    name: 'packageNames',
+    description: 'Package names.',
+  )]
+  #[MarvinIncubatorCLI\ValidatePackageNames(
+    locators: [
+      [
+        'type' => 'argument',
+        'name' => 'packageNames',
+      ],
+    ],
+  )]
   public function cmdRunExecute(
-    array $packages,
+    array $packageNames,
     array $options = [
       'phpVariants' => [],
       'dbVariants' => [],
     ]
   ): ?CollectionBuilder {
     $testSuiteNames = $this->getTestSuiteNamesByEnvironmentVariant();
-    if ($testSuiteNames === NULL || !$packages) {
+    if ($testSuiteNames === NULL || !$packageNames) {
       return NULL;
     }
 
-    $phpVariants = array_filter($options['phpVariants'], new ArrayFilterEnabled());
+    $phpVariants = array_filter($options['phpVariants'], new EnabledFilter());
     if (!$phpVariants) {
       // @todo This warning is no longer required.
       $this
         ->getLogger()
-        ->warning(dt('There is no configured PHP variant. Check ${marvin.php.variant} in your drush.yml files'));
+        ->warning('There is no configured PHP variant. Check ${marvin.php.variant} in your drush.yml files');
     }
 
-    $dbVariants = array_filter($options['dbVariants'], new ArrayFilterEnabled());
+    $dbVariants = array_filter($options['dbVariants'], new EnabledFilter());
     if (!$dbVariants) {
       // @todo This warning is no longer required.
       $this
         ->getLogger()
-        ->warning(dt('There is no configured Database variant. Check ${marvin.database.variant} in your drush.yml files'));
+        ->warning('There is no configured Database variant. Check ${marvin.database.variant} in your drush.yml files');
     }
 
     $groups = [];
-    foreach ($packages as $packageName) {
+    foreach ($packageNames as $packageName) {
       $groups[] = MarvinUtils::splitPackageName($packageName)['name'];
     }
 
@@ -94,8 +122,16 @@ class TestCommands extends TestCommandsBase {
 
   /**
    * {@inheritdoc}
+   *
+   * @phpstan-param array<string, mixed> $options
+   * @phpstan-param marvin-php-variant $phpVariant
+   * @phpstan-param marvin-incubator-db-variant $dbVariant
    */
-  protected function getTaskPhpUnitRun(array $options, array $phpVariant = [], array $dbVariant = []): CollectionBuilder {
+  protected function getTaskPhpUnitRun(
+    array $options,
+    array $phpVariant = [],
+    array $dbVariant = [],
+  ): TaskInterface {
     // @todo Find a better place to getenv().
     $simpleTestBaseUrlEnv = getenv('SIMPLETEST_BASE_URL');
     $simpleTestBaseUrlInput = $this->input()->getOption('uri');
@@ -104,12 +140,12 @@ class TestCommands extends TestCommandsBase {
     }
 
     $phpUnitTask = parent::getTaskPhpUnitRun($options)
-      ->setPhpExecutable(Utils::phpVariantToCommand($phpVariant));
+      ->setPhpExecutable(MarvinUtils::phpVariantToCommand($phpVariant));
 
     $phpUnitConfigFileName = PhpunitUtils::getPhpunitConfigFileName(
       $this->getProjectRootDir(),
       $phpVariant,
-      $dbVariant
+      $dbVariant,
     );
 
     if ($this->fs->exists($phpUnitConfigFileName)) {

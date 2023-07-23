@@ -1,0 +1,66 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Call to an undefined method Drupal\\\\marvin_phpunit_incubator\\\\Robo\\\\Task\\\\PhpunitConfigGeneratorTask\\|Robo\\\\Collection\\\\CollectionBuilder\\:\\:setProjectVendor\\(\\)\\.$#"
+			count: 1
+			path: ../Commands/marvin_phpunit_incubator/ConfigCommands.php
+
+		-
+			message: "#^Call to an undefined method Robo\\\\Collection\\\\CollectionBuilder\\|Robo\\\\Collection\\\\TaskForEach\\:\\:iterationMessage\\(\\)\\.$#"
+			count: 1
+			path: ../Commands/marvin_phpunit_incubator/ConfigCommands.php
+
+		-
+			message: "#^Call to an undefined method Robo\\\\Collection\\\\CollectionBuilder\\|Robo\\\\Task\\\\File\\\\Write\\:\\:deferTaskConfiguration\\(\\)\\.$#"
+			count: 1
+			path: ../Commands/marvin_phpunit_incubator/ConfigCommands.php
+
+		-
+			message: "#^Method Drush\\\\Commands\\\\marvin_phpunit_incubator\\\\ConfigCommands\\:\\:cmdMarvinGeneratePhpunitConfigExecute\\(\\) should return Robo\\\\Collection\\\\CollectionBuilder but returns Robo\\\\Collection\\\\TaskForEach\\.$#"
+			count: 1
+			path: ../Commands/marvin_phpunit_incubator/ConfigCommands.php
+
+		-
+			message: "#^Call to an undefined method Robo\\\\Collection\\\\CollectionBuilder\\|Sweetchuck\\\\Robo\\\\PHPUnit\\\\Task\\\\RunTask\\:\\:setPhpExecutable\\(\\)\\.$#"
+			count: 1
+			path: ../Commands/marvin_phpunit_incubator/TestCommands.php
+
+		-
+			message: "#^Default value of the parameter \\#2 \\$phpVariant \\(array\\{\\}\\) of method Drush\\\\Commands\\\\marvin_phpunit_incubator\\\\TestCommands\\:\\:getTaskPhpUnitRun\\(\\) is incompatible with type array\\{id\\: string, enabled\\: bool, binDir\\: string, command\\: array\\{envVar\\?\\: array\\<string, string\\|null\\>, executable\\: string\\}\\}\\.$#"
+			count: 1
+			path: ../Commands/marvin_phpunit_incubator/TestCommands.php
+
+		-
+			message: "#^Default value of the parameter \\#3 \\$dbVariant \\(array\\{\\}\\) of method Drush\\\\Commands\\\\marvin_phpunit_incubator\\\\TestCommands\\:\\:getTaskPhpUnitRun\\(\\) is incompatible with type array\\{id\\: string\\}\\.$#"
+			count: 1
+			path: ../Commands/marvin_phpunit_incubator/TestCommands.php
+
+		-
+			message: "#^Negated boolean expression is always false\\.$#"
+			count: 1
+			path: ../src/PhpunitConfigGen.php
+
+		-
+			message: "#^Offset string on array\\{\\} in empty\\(\\) does not exist\\.$#"
+			count: 1
+			path: ../src/PhpunitConfigGen.php
+
+		-
+			message: "#^Offset string on array\\{\\} in isset\\(\\) does not exist\\.$#"
+			count: 1
+			path: ../src/PhpunitConfigGen.php
+
+		-
+			message: "#^Offset string on array\\{\\} on left side of \\?\\? does not exist\\.$#"
+			count: 1
+			path: ../src/PhpunitConfigGen.php
+
+		-
+			message: "#^Result of && is always false\\.$#"
+			count: 1
+			path: ../src/PhpunitConfigGen.php
+
+		-
+			message: "#^Result of \\|\\| is always false\\.$#"
+			count: 1
+			path: ../src/PhpunitConfigGen.php

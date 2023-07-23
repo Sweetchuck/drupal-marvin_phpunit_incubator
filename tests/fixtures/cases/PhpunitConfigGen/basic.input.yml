@@ -1,0 +1,31 @@
+envVars:
+  SIMPLETEST_BASE_URL: 'my-SIMPLETEST_BASE_URL-a'
+  SIMPLETEST_DB: 'my-SIMPLETEST_DB-b'
+  SYMFONY_DEPRECATIONS_HELPER: 'my-SYMFONY_DEPRECATIONS_HELPER-c'
+  MINK_DRIVER_CLASS: 'my-MINK_DRIVER_CLASS-d'
+  MINK_DRIVER_ARGS: 'my-MINK_DRIVER_ARGS-e'
+  MINK_DRIVER_ARGS_WEBDRIVER: 'my-MINK_DRIVER_ARGS_WEBDRIVER-f'
+vfsStructure:
+  drupal:
+    dummy_m1-1.x:
+      Commands: {}
+      src: {}
+      tests:
+        src:
+          Unit:
+            FooTest.php: ''
+          Kernel:
+            FooTest.php: ''
+          Functional:
+            FooTest.php: ''
+          FunctionalJavascript:
+            FooTest.php: ''
+      dummy_m1.module: ''
+  me:
+    incubator1:
+      docroot:
+        index.php: ''
+options:
+  cwd: 'me/incubator1/docroot'
+  projectName: 'dummy_m1'
+  projectRelativePath: '../../drupal/dummy_m1-1.x'

@@ -1,87 +1,103 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Drush\Commands\marvin_phpunit_incubator;
 
-use Drupal\marvin\PhpVariantTrait;
+use Drupal\Core\Url;
+use Drupal\marvin_incubator\Attributes as MarvinIncubatorCLI;
 use Drupal\marvin_incubator\CommandsBaseTrait;
-use Drupal\marvin_phpunit_incubator\Robo\PhpunitConfigGeneratorTaskLoader;
+use Drupal\marvin_phpunit_incubator\Robo\PhpunitConfigGenTaskLoader;
+use Drush\Attributes as CLI;
+use Drush\Boot\DrupalBootLevels;
 use Drush\Commands\marvin\CommandsBase;
-use Drush\Sql\SqlBase;
-use Psr\Log\LoggerInterface;
+use Robo\Collection\CollectionBuilder;
 use Robo\Contract\TaskInterface;
-use Webmozart\PathUtil\Path;
 
 class ConfigCommands extends CommandsBase {
 
   use CommandsBaseTrait;
-  use PhpVariantTrait;
-  use PhpunitConfigGeneratorTaskLoader;
+  use PhpunitConfigGenTaskLoader;
 
   /**
-   * @command marvin:generate:phpunit-config
-   * @bootstrap configuration
+   * @param string[] $packageNames
+   *
+   * @noinspection PhpUnused
    */
-  public function generatePhpunitConfig(): TaskInterface {
-    $bootstrapManager = $this->getContainer()->get('bootstrap.manager');
+  #[CLI\Help(
+    description: 'Generates phpunit.xml file for managed extensions.',
+  )]
+  #[CLI\Bootstrap(level: DrupalBootLevels::FULL)]
+  #[CLI\Command(name: 'marvin:generate:phpunit-config')]
+  #[CLI\Argument(
+    name: 'packageNames',
+    description: 'Package names.',
+  )]
+  #[MarvinIncubatorCLI\ValidatePackageNames(
+    locators: [
+      ['type' => 'argument', 'name' => 'packageNames'],
+    ],
+  )]
+  public function cmdMarvinGeneratePhpunitConfigExecute(array $packageNames): TaskInterface {
+    // NOTE: DrupalBootLevels is FULL because the URL is needed to set the SIMPLETEST_BASE_URL variable.
+    // NOTE: Because of the DrupalBootLevels::FULL the CWD points to the drupalRoot.
+    $packages = array_intersect_key(
+      $this->getManagedDrupalExtensions(),
+      array_flip($packageNames),
+    );
 
-    $uri = $bootstrapManager->getUri();
-    if (is_bool($uri)) {
-      return $this->getTaskLoggerWrite('URI could not be detected');
-    }
-
-    $uri = (string) $uri;
-    $uriParts = parse_url($uri);
-    // @todo URL parts detector.
-    [$webPhpVariantId, , $dbId] = explode('.', $uriParts['host']);
-
-    $phpVariants = $this->getConfigPhpVariants();
-    $webPhpVariant = $phpVariants[$webPhpVariantId];
-
-    $projectRoot = $bootstrapManager->getComposerRoot();
-    $drupalRootAbs = $bootstrapManager->getRoot();
-    $drupalRoot = Path::makeRelative($drupalRootAbs, $projectRoot);
-    $backToProjectRoot = Path::makeRelative($projectRoot, $drupalRootAbs);
-
-    $reportsDir = (string) $this->getConfig()->get('marvin.reportsDir', 'reports');
-    $db = SqlBase::create([]);
-    $dstFileName = "$backToProjectRoot/phpunit.$dbId.{$webPhpVariant['version']['majorMinor']}.xml";
-
-    $dbConnection = $db->getDbSpec();
-    unset($dbConnection['prefix']);
-
-    return $this
-      ->taskPhpunitConfigGenerator()
-      ->setOutputDestination($dstFileName)
-      ->setDrupalRoot($drupalRoot)
-      ->setUrl($uri)
-      ->setDbConnection($dbConnection)
-      ->setPhpVersion((string) $webPhpVariant['version']['id'])
-      ->setReportsDir($reportsDir)
-      ->setPackagePaths($this->getManagedDrupalExtensions());
+    return $this->getTaskGeneratePhpunitConfigForPackages($packages);
   }
 
   /**
-   * @todo Move this method into \Drush\Commands\marvin\CommandsBase.
+   * @phpstan-param array<string, mixed> $packages
    *
-   * @see \Drush\Commands\marvin\CommandsBase
+   * @todo PHPStan array shape.
    */
-  protected function getTaskLoggerWrite(
-    string $message,
-    array $context = [],
-    $exitCode = 1,
-    string $level = 'error',
-    ?LoggerInterface $logger = NULL
-  ): TaskInterface {
+  protected function getTaskGeneratePhpunitConfigForPackages(array $packages): TaskInterface {
+    // @phpstan-ignore-next-line
     return $this
-      ->collectionBuilder()
-      ->addCode(function () use ($message, $context, $exitCode, $level, $logger): int {
-        $logger = $logger ?: $this->getLogger();
-        $logger->log($level, $message, $context);
+      ->taskForEach($packages)
+      ->iterationMessage('Generate PHPUnit configuration XML for package {key}')
+      ->withBuilder([$this, 'taskBuilderGeneratePhpunitConfigForPackage'](...));
+  }
 
-        return $exitCode;
-      });
+  /**
+   * @phpstan-param array<string, mixed> $package
+   *
+   * @todo PHPStan array shape.
+   *
+   * @noinspection PhpUnusedParameterInspection
+   */
+  protected function taskBuilderGeneratePhpunitConfigForPackage(
+    CollectionBuilder $builder,
+    string $key,
+    $package,
+  ): void {
+    $projectRootDir = $this->getProjectRootDir();
+    $drupalRootDir = $this->getComposerInfo()->getDrupalRootDir();
+    // @todo Configurable.
+    $mdeDir = "$projectRootDir/managedDrupalExtension";
+    $baseUrl = Url::fromRoute('<front>', [], ['absolute' => TRUE]);
+
+    $builder
+      ->addTask(
+        // @phpstan-ignore-next-line
+        $this
+          ->taskMarvinPhpunitConfigGenerator()
+          ->setBaseUrl($baseUrl->toString())
+          ->setDrupalRoot($drupalRootDir)
+          ->setProjectVendor($package['projectVendor'])
+          ->setProjectName($package['projectName'])
+          ->setProjectRelativePath($package['pathRelative'])
+      )
+      ->addTask(
+        // @todo This creates the required directories as well, but with wrong permissions.
+        // @phpstan-ignore-next-line
+        $this
+          ->taskWriteToFile("$mdeDir/{$package['projectName']}/phpunit.xml")
+          ->deferTaskConfiguration('text', 'phpunitConfig')
+      );
   }
 
 }

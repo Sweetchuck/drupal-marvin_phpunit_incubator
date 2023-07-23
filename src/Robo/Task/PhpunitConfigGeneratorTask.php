@@ -6,7 +6,7 @@ namespace Drupal\marvin_phpunit_incubator\Robo\Task;
 
 use Drupal\marvin\Robo\Task\BaseTask;
 use Drupal\marvin\WriterWrapper;
-use Drupal\marvin_phpunit_incubator\PhpunitConfigGenerator;
+use Drupal\marvin_phpunit_incubator\PhpunitConfigGen;
 
 class PhpunitConfigGeneratorTask extends BaseTask {
 
@@ -128,10 +128,7 @@ class PhpunitConfigGeneratorTask extends BaseTask {
     return $this;
   }
 
-  /**
-   * {@inheritdoc}
-   */
-  public function setOptions(array $options) {
+  public function setOptions(array $options): static {
     parent::setOptions($options);
 
     if (array_key_exists('outputDestination', $options)) {
@@ -169,10 +166,7 @@ class PhpunitConfigGeneratorTask extends BaseTask {
     return $this;
   }
 
-  /**
-   * {@inheritdoc}
-   */
-  protected function initOptions() {
+  protected function initOptions(): static {
     parent::initOptions();
 
     $this->options['drupalRoot'] = [
@@ -208,10 +202,7 @@ class PhpunitConfigGeneratorTask extends BaseTask {
     return $this;
   }
 
-  /**
-   * {@inheritdoc}
-   */
-  protected function runAction() {
+  protected function runAction(): static {
     $this->assets['phpunitConfig'] = $this->getGenerator()->generate();
     $this
       ->outputDestinationWrapper
@@ -221,8 +212,8 @@ class PhpunitConfigGeneratorTask extends BaseTask {
     return $this;
   }
 
-  protected function getGenerator(): PhpunitConfigGenerator {
-    $generator = new PhpunitConfigGenerator();
+  protected function getGenerator(): PhpunitConfigGen {
+    $generator = new PhpunitConfigGen();
 
     if ($this->options['drupalRoot']['value']) {
       $generator->setDrupalRoot($this->options['drupalRoot']['value']);

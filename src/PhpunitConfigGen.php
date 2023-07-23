@@ -6,12 +6,14 @@ namespace Drupal\marvin_phpunit_incubator;
 
 use Drupal\FunctionalJavascriptTests\DrupalSelenium2Driver;
 use Drupal\marvin\Utils as MarvinUtils;
-use Stringy\StaticStringy;
+use Symfony\Component\String\UnicodeString;
 
 /**
+ * @see https://github.com/drush-ops/drush/issues/5662
+ *
  * @todo Interface.
  */
-class PhpunitConfigGenerator {
+class PhpunitConfigGen {
 
   protected int $jsonEncodeFlagsForXmlAttributes = \JSON_UNESCAPED_SLASHES;
 
@@ -198,7 +200,10 @@ class PhpunitConfigGenerator {
       $element->appendChild($testSuitElement);
       $testSuitElement->setAttribute('name', $tsName);
 
-      $tsNameUpperCamel = StaticStringy::upperCamelize($tsName);
+      $tsNameUpperCamel = (new UnicodeString("a_$tsName"))
+        ->camel()
+        ->trimPrefix('a')
+        ->toString();
       $testSuitElement->appendChild($this->doc->createElement(
         'file',
         "{$this->drupalRoot}/core/tests/TestSuites/{$tsNameUpperCamel}TestSuite.php"

@@ -61,9 +61,9 @@ class PhpunitConfigGen {
       ->generateRootAttributes()
       ->generateUsageComment()
       ->generatePhp()
+      ->generateSource()
       ->generateCoverage()
       ->generateTestsuites()
-      ->generateListeners()
       ->generateLogging()
       ->xml
       ->saveXML();
@@ -113,16 +113,20 @@ class PhpunitConfigGen {
     return $this;
   }
 
-  protected function generateCoverage(): static {
-    $coverageElement = $this->ensureChildElement('coverage');
-    $coverageElement->setAttribute('processUncoveredFiles', 'true');
-    $includeElement = $this->ensureChildElement('include', $coverageElement);
-    foreach ($this->getCoverageInclude() as $path => $info) {
+  protected function generateSource(): static {
+    $sourceElement = $this->ensureChildElement('source');
+    $includeElement = $this->ensureChildElement('include', $sourceElement);
+    foreach ($this->getSourceInclude() as $path => $info) {
       $element = $this->xml->createElement($info['type'], $path);
       $includeElement->appendChild($element);
       $this->addAttributes($element, $info['attributes']);
     }
 
+    return $this;
+  }
+
+  protected function generateCoverage(): static {
+    $coverageElement = $this->ensureChildElement('coverage');
     $reportElement = $this->ensureChildElement('report', $coverageElement);
     $values = $this->getCoverageReporters();
     foreach ($values as $tag => $attributes) {
@@ -146,13 +150,6 @@ class PhpunitConfigGen {
         $this->addAttributes($element, $entry['attributes']);
       }
     }
-
-    return $this;
-  }
-
-  protected function generateListeners(): static {
-    $wrapperElement = $this->ensureChildElement('listeners');
-    $this->addChildElements($wrapperElement, $this->getListeners());
 
     return $this;
   }
@@ -220,6 +217,11 @@ class PhpunitConfigGen {
       'cacheResultFile' => "$backToRoot/.cache/phpunit/drupal/$projectName/result.json",
       'beStrictAboutOutputDuringTests' => 'true',
       'beStrictAboutChangesToGlobalState' => 'true',
+      'displayDetailsOnPhpunitDeprecations' => 'true',
+      'displayDetailsOnTestsThatTriggerNotices' => 'true',
+      'displayDetailsOnTestsThatTriggerDeprecations' => 'true',
+      'displayDetailsOnTestsThatTriggerWarnings' => 'true',
+      'displayDetailsOnTestsThatTriggerErrors' => 'true',
       'colors' => 'true',
     ];
   }
@@ -253,6 +255,22 @@ class PhpunitConfigGen {
    * @phpstan-return array<string, null|string>
    */
   protected function getDefaultEnvVarValues(): array {
+    // @todo Remove or explain `chromedriver --port=4444 --url-base=/wd/hub`.
+    $webDriver = [
+      'chrome',
+      [
+        'browserName' => 'chrome',
+        'goog:chromeOptions' => [
+          'args' => [
+            '--disable-gpu',
+            '--no-sandbox',
+            '--disable-dev-shm-usage',
+          ],
+        ],
+      ],
+      'http://127.0.0.1:4444/wd/hub',
+    ];
+
     return [
       'SIMPLETEST_BASE_URL' => $this->getBaseUrl(),
       'SIMPLETEST_DB' => NULL,
@@ -269,16 +287,16 @@ class PhpunitConfigGen {
           'indirect',
         ],
       ]),
-      'MINK_DRIVER_CLASS' => 'Drupal\FunctionalJavascriptTests\DrupalSelenium2Drive',
+      'MINK_DRIVER_CLASS' => 'Drupal\FunctionalJavascriptTests\DrupalSelenium2Driver',
       'MINK_DRIVER_ARGS' => NULL,
-      'MINK_DRIVER_ARGS_WEBDRIVER' => NULL,
+      'MINK_DRIVER_ARGS_WEBDRIVER' => json_encode($webDriver, JSON_UNESCAPED_SLASHES),
     ];
   }
 
   /**
    * @phpstan-return array<string, array<string, mixed>>
    */
-  protected function getCoverageInclude(): array {
+  protected function getSourceInclude(): array {
     $backToRoot = $this->getBackToRootFromPhpunitXml();
     $extDirFromXml = "$backToRoot/" . $this->getProjectRelativePath();
     $extDirFromCwd = Path::Join(
@@ -391,20 +409,6 @@ class PhpunitConfigGen {
         'name' => 'junit',
         'attributes' => [
           'outputFile' => './reports/machine/junit/phpunit.xml',
-        ],
-      ],
-    ];
-  }
-
-  /**
-   * @phpstan-return array<array<string, mixed>>
-   */
-  protected function getListeners(): array {
-    return [
-      [
-        'name' => 'listener',
-        'attributes' => [
-          'class' => '\Drupal\Tests\Listeners\DrupalListener',
         ],
       ],
     ];

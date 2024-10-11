@@ -6,6 +6,11 @@
   cacheResultFile="../../.cache/phpunit/drupal/dummy_m1/result.json"
   beStrictAboutOutputDuringTests="true"
   beStrictAboutChangesToGlobalState="true"
+  displayDetailsOnPhpunitDeprecations="true"
+  displayDetailsOnTestsThatTriggerNotices="true"
+  displayDetailsOnTestsThatTriggerDeprecations="true"
+  displayDetailsOnTestsThatTriggerWarnings="true"
+  displayDetailsOnTestsThatTriggerErrors="true"
   colors="true">
   <!--
 Usage:
@@ -22,12 +27,14 @@ cd docroot
     <env name="MINK_DRIVER_ARGS" value="my-MINK_DRIVER_ARGS-e"/>
     <env name="MINK_DRIVER_ARGS_WEBDRIVER" value="my-MINK_DRIVER_ARGS_WEBDRIVER-f"/>
   </php>
-  <coverage processUncoveredFiles="true">
+  <source>
     <include>
       <directory>../../../../drupal/dummy_m1-1.x/Commands</directory>
       <directory>../../../../drupal/dummy_m1-1.x/src</directory>
       <file>../../../../drupal/dummy_m1-1.x/dummy_m1.module</file>
     </include>
+  </source>
+  <coverage>
     <report>
       <clover outputFile="./reports/machine/coverage/phpunit.xml"/>
       <html outputDirectory="./reports/human/coverage/html"/>

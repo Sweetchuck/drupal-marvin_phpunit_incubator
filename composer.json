@@ -26,24 +26,24 @@
         "sort-packages": true
     },
     "require": {
-        "php": ">=8.2",
+        "php": ">=8.3",
         "ext-dom": "*",
         "ext-json": "*",
-        "drupal/marvin": "3.x-dev",
-        "drupal/marvin_incubator": "3.x-dev",
-        "drupal/marvin_phpunit": "2.x-dev",
-        "sweetchuck/robo-phpunit": "3.x-dev",
+        "drupal/marvin": "4.x-dev",
+        "drupal/marvin_incubator": "4.x-dev",
+        "drupal/marvin_phpunit": "3.x-dev",
+        "sweetchuck/robo-phpunit": "4.x-dev",
         "sweetchuck/env-var-storage": "1.x-dev",
         "sweetchuck/utils": "2.x-dev"
     },
     "require-dev": {
-        "drush/drush": "^12.0",
+        "drush/drush": "^13.0",
         "mikey179/vfsstream": "^1.6",
         "symfony/finder": "^6.0",
         "weitzman/drupal-test-traits": "^2.1"
     },
     "suggest": {
-        "drush/drush": "^12.0"
+        "drush/drush": "^13.0"
     },
     "autoload": {
         "psr-4": {

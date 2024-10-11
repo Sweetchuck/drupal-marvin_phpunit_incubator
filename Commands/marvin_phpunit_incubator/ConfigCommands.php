@@ -59,7 +59,7 @@ class ConfigCommands extends CommandsBase {
     return $this
       ->taskForEach($packages)
       ->iterationMessage('Generate PHPUnit configuration XML for package {key}')
-      ->withBuilder([$this, 'taskBuilderGeneratePhpunitConfigForPackage'](...));
+      ->withBuilder($this->taskBuilderGeneratePhpunitConfigForPackage(...));
   }
 
   /**

@@ -1,0 +1,24 @@
+marvin:
+  ##
+  # Extension specific configuration.
+  ##
+  mde:
+    packages:
+      default:
+        phpunit:
+          enabled: true
+          php:
+            ##
+            # Keys from marvin.php.variants
+            #
+            # @var array<string, bool>
+            ##
+            variants: {  }
+
+          database:
+            ##
+            # Keys from marvin.database.variants
+            #
+            # @var array<string, bool>
+            ##
+            variants: {  }

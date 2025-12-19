@@ -30,7 +30,7 @@ trait PhpunitConfigGenProperties {
     return $this;
   }
 
-  protected string $rootProjectDir = '..';
+  protected string $rootProjectDir = '.';
 
   public function getRootProjectDir(): string {
     return $this->rootProjectDir;

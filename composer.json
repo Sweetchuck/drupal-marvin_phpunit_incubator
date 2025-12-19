@@ -25,25 +25,28 @@
     "config": {
         "sort-packages": true
     },
+    "conflict": {
+        "drupal/marvin_phpunit_product": "*"
+    },
     "require": {
-        "php": ">=8.3",
+        "php": ">=8.4",
         "ext-dom": "*",
         "ext-json": "*",
-        "drupal/marvin": "4.x-dev",
-        "drupal/marvin_incubator": "4.x-dev",
-        "drupal/marvin_phpunit": "3.x-dev",
+        "drupal/marvin": "11.3.x-dev",
+        "drupal/marvin_incubator": "11.3.x-dev",
+        "drupal/marvin_phpunit": "11.3.x-dev",
         "sweetchuck/robo-phpunit": "4.x-dev",
         "sweetchuck/env-var-storage": "1.x-dev",
         "sweetchuck/utils": "2.x-dev"
     },
     "require-dev": {
-        "drush/drush": "^13.0",
+        "drush/drush": "^13.7",
         "mikey179/vfsstream": "^1.6",
         "symfony/finder": "^6.0",
         "weitzman/drupal-test-traits": "^2.1"
     },
     "suggest": {
-        "drush/drush": "^13.0"
+        "drush/drush": "^13.7"
     },
     "autoload": {
         "psr-4": {

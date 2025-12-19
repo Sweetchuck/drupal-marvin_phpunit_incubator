@@ -32,6 +32,7 @@ class PhpunitConfigGen {
   protected \DOMElement $xmlRoot;
 
   public function __construct(
+    protected MarvinUtils $utils,
     ?EnvVarStorageInterface $envVarStorage = NULL,
     ?Filesystem $fs = NULL,
   ) {
@@ -79,8 +80,7 @@ class PhpunitConfigGen {
     $drupalRoot = $this->getDrupalRoot();
     $projectName = $this->getProjectName();
     $mdeDir = $this->getMdeDir();
-    $rootProjectDir = $this->getRootProjectDir();
-    $dstFilePathRelativeFromDrupalRoot = "$rootProjectDir/$mdeDir/$projectName/phpunit.xml";
+    $dstFilePathRelativeFromDrupalRoot = "../$mdeDir/$projectName/phpunit.xml";
     $text = <<< TEXT
 
       Usage:
@@ -214,7 +214,7 @@ class PhpunitConfigGen {
       'xmlns:xsi' => 'http://www.w3.org/2001/XMLSchema-instance',
       'xsi:noNamespaceSchemaLocation' => "$backToRoot/$vendorDir/phpunit/phpunit/phpunit.xsd",
       'bootstrap' => "$backToRoot/tests/bootstrap.php",
-      'cacheResultFile' => "$backToRoot/.cache/phpunit/drupal/$projectName/result.json",
+      'cacheDirectory' => "$backToRoot/.cache/phpunit/drupal/$projectName",
       'beStrictAboutOutputDuringTests' => 'true',
       'beStrictAboutChangesToGlobalState' => 'true',
       'displayDetailsOnPhpunitDeprecations' => 'true',
@@ -243,8 +243,8 @@ class PhpunitConfigGen {
     $values = $this->getDefaultEnvVarValues();
     foreach ($values as $name => $defaultValue) {
       $actualValue = $this->envVarStorage->get($name);
-      $values[$name] = gettype($actualValue) === 'string' ?
-        $actualValue
+      $values[$name] = gettype($actualValue) === 'string'
+        ? $actualValue
         : $defaultValue;
     }
 
@@ -312,7 +312,7 @@ class PhpunitConfigGen {
       'src' => TRUE,
     ];
     $relativePaths += array_fill_keys(
-      MarvinUtils::getDirectDescendantDrupalPhpFiles($extDirFromCwd),
+      $this->utils->getDirectDescendantDrupalPhpFiles($extDirFromCwd),
       TRUE,
     );
     array_walk($relativePaths, $this->fileSystemExistsWalker);

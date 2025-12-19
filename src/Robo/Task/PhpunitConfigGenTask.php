@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace Drupal\marvin_phpunit_incubator\Robo\Task;
 
 use Drupal\marvin\Robo\Task\BaseTask;
+use Drupal\marvin\Utils as MarvinUtils;
 use Drupal\marvin_phpunit_incubator\PhpunitConfigGen;
 use Drupal\marvin_phpunit_incubator\PhpunitConfigGenProperties;
 use Sweetchuck\EnvVarStorage\EnvVarStorageInterface;
+use Sweetchuck\Utils\FileSystemUtils;
 
 class PhpunitConfigGenTask extends BaseTask {
 
@@ -107,7 +109,11 @@ class PhpunitConfigGenTask extends BaseTask {
   }
 
   protected function getGenerator(): PhpunitConfigGen {
+    // @todo Get $generator from DI container.
     $generator = new PhpunitConfigGen(
+      new MarvinUtils(
+        new FileSystemUtils(),
+      ),
       $this->options['envVarStorage']['value'],
     );
 

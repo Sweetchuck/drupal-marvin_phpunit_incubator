@@ -1,5 +1,5 @@
 parameters:
 	paths:
-		- ../Commands/
 		- ../src/
 		- ../tests/src/
+		- ../MarvinPhpunitGenerateConfigCommand.php

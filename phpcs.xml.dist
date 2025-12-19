@@ -4,9 +4,9 @@
   xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/squizlabs/PHP_CodeSniffer/master/phpcs.xsd"
   name="Custom">
 
-  <file>./Commands/</file>
   <file>./src/</file>
   <file>./tests/src/</file>
+  <file>./MarvinPhpunitConfigGenerateCommand.php</file>
 
   <arg
     name="extensions"

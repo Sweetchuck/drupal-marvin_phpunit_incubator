@@ -6,13 +6,18 @@ namespace Drupal\marvin_phpunit_incubator;
 
 use Drupal\marvin\ContainerInitializerBase;
 use Drupal\marvin\Utils as MarvinUtils;
-use Psr\Container\ContainerInterface;
+use Drupal\marvin_incubator\ContainerInitializer as ContainerInitializerMarvinProduct;
 
 class ContainerInitializer extends ContainerInitializerBase {
 
+  /**
+   * {@inheritdoc}
+   */
   #[\Override]
-  public static function isInitialized(ContainerInterface $container): bool {
-    return $container->has(PhpunitConfigGen::class);
+  public static function getDependencies(): array {
+    return [
+      ContainerInitializerMarvinProduct::class,
+    ];
   }
 
   #[\Override]

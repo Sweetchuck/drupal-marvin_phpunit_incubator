@@ -256,7 +256,15 @@ class PhpunitConfigGen {
    */
   protected function getDefaultEnvVarValues(): array {
     // @todo Remove or explain `chromedriver --port=4444 --url-base=/wd/hub`.
-    $webDriver = [
+    $mdClass = 'Drupal\FunctionalJavascriptTests\DrupalSelenium2Driver';
+    $mdArgs = [
+      'chrome',
+      [
+        'browserName' => 'chrome',
+      ],
+      'http://127.0.0.1:4444/wd/hub',
+    ];
+    $mdArgsWebDriver = [
       'chrome',
       [
         'browserName' => 'chrome',
@@ -287,9 +295,9 @@ class PhpunitConfigGen {
           'indirect',
         ],
       ]),
-      'MINK_DRIVER_CLASS' => 'Drupal\FunctionalJavascriptTests\DrupalSelenium2Driver',
-      'MINK_DRIVER_ARGS' => NULL,
-      'MINK_DRIVER_ARGS_WEBDRIVER' => json_encode($webDriver, JSON_UNESCAPED_SLASHES),
+      'MINK_DRIVER_CLASS' => $mdClass,
+      'MINK_DRIVER_ARGS' => json_encode($mdArgs, JSON_UNESCAPED_SLASHES),
+      'MINK_DRIVER_ARGS_WEBDRIVER' => json_encode($mdArgsWebDriver, JSON_UNESCAPED_SLASHES),
     ];
   }
 
